@@ -1,4 +1,4 @@
-package main
+package internal
 
 import "fmt"
 
@@ -9,15 +9,15 @@ type BinaryTree struct {
 	height int
 }
 
-func visualize(node *BinaryTree) {
+func Visualize(node *BinaryTree) {
 	if node == nil {
 		return
 	}
-	visualize(node.left)
+	Visualize(node.left)
 	fmt.Println("Node", node)
 	fmt.Println("Left", node.left)
 	fmt.Println("Right", node.right)
-	visualize(node.right)
+	Visualize(node.right)
 }
 
 func createNode(value int) *BinaryTree {
@@ -62,14 +62,14 @@ func getBalanceFactor(node *BinaryTree) int {
 	return getHeight(node.left) - getHeight(node.right)
 }
 
-func insert(node *BinaryTree, value int) *BinaryTree {
+func Insert(node *BinaryTree, value int) *BinaryTree {
 	if node == nil {
 		return createNode(value)
 	}
 	if value < node.value {
-		node.left = insert(node.left, value)
+		node.left = Insert(node.left, value)
 	} else {
-		node.right = insert(node.right, value)
+		node.right = Insert(node.right, value)
 	}
 
 	node.height = updateHeight(node)
@@ -116,11 +116,4 @@ func rotateRight(node *BinaryTree) *BinaryTree {
 	node.height = 1 + max(getHeight(node.left), getHeight(node.right))
 	root.height = 1 + max(getHeight(root.left), getHeight(root.right))
 	return root
-}
-
-func main() {
-	root := insert(nil, 10)
-	root = insert(root, 5)
-	root = insert(root, 8)
-	visualize(root)
 }
