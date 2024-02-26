@@ -1,10 +1,17 @@
 package main
 
-import "memtable/internal"
+import (
+	"fmt"
+	"memtable/internal"
+
+	tcp "github.com/rayaan01/tcp-server"
+)
 
 func main() {
-	root := internal.Insert(nil, 10)
-	root = internal.Insert(root, 5)
-	root = internal.Insert(root, 8)
-	internal.Visualize(root)
+	server, err := tcp.CreateServer("localhost", 8080)
+	if err != nil {
+		fmt.Println("Server could not start", err)
+		return
+	}
+	server.AcceptConnections(internal.Handler)
 }
