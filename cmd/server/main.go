@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"memtable/internal"
+	"lsm/internal"
 
 	tcp "github.com/rayaan01/tcp-server"
 )
