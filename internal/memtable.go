@@ -2,6 +2,8 @@ package internal
 
 import "fmt"
 
+var ROOT *AVLTree = nil
+
 type AVLTree struct {
 	key    string
 	value  string

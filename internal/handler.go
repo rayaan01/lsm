@@ -9,8 +9,6 @@ import (
 	"github.com/rayaan01/tcp-server"
 )
 
-var ROOT *AVLTree = nil
-
 func Handler(conn net.Conn, s *tcp.Server) {
 	for {
 		buffer := make([]byte, 0, 4096)
