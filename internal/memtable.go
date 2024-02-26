@@ -2,26 +2,68 @@ package internal
 
 import "fmt"
 
-type BinaryTree struct {
-	value  int
-	left   *BinaryTree
-	right  *BinaryTree
-	height int
+type AVLTree struct {
+	key    string
+	value  string
+	left   *AVLTree
+	right  *AVLTree
+	height int16
 }
 
-func Visualize(node *BinaryTree) {
+func Insert(node *AVLTree, key string, value string) *AVLTree {
 	if node == nil {
-		return
+		return createNode(key, value)
 	}
-	Visualize(node.left)
-	fmt.Println("Node", node)
-	fmt.Println("Left", node.left)
-	fmt.Println("Right", node.right)
-	Visualize(node.right)
+
+	if key < node.key {
+		node.left = Insert(node.left, key, value)
+	} else {
+		node.right = Insert(node.right, key, value)
+	}
+
+	node.height = updateHeight(node)
+	bf := getHeight(node.left) - getHeight(node.right)
+
+	if bf < -1 && key > node.right.key {
+		return rotateLeft(node)
+	}
+
+	if bf > 1 && key < node.left.key {
+		return rotateRight(node)
+	}
+
+	if bf < -1 && key < node.right.key {
+		node.right = rotateRight(node.right)
+		return rotateLeft(node)
+	}
+
+	if bf > 1 && key > node.left.key {
+		node.left = rotateLeft(node.right)
+		return rotateRight(node)
+	}
+
+	return node
 }
 
-func createNode(value int) *BinaryTree {
-	return &BinaryTree{
+func Get(node *AVLTree, key string) string {
+	if node == nil {
+		return "(nil)"
+	}
+
+	if node.key == key {
+		return node.value
+	}
+
+	if key < node.key {
+		return Get(node.left, key)
+	} else {
+		return Get(node.right, key)
+	}
+}
+
+func createNode(key string, value string) *AVLTree {
+	return &AVLTree{
+		key:    key,
 		value:  value,
 		left:   nil,
 		right:  nil,
@@ -29,7 +71,7 @@ func createNode(value int) *BinaryTree {
 	}
 }
 
-func getHeight(node *BinaryTree) int {
+func getHeight(node *AVLTree) int16 {
 	if node == nil {
 		return 0
 	} else {
@@ -37,10 +79,10 @@ func getHeight(node *BinaryTree) int {
 	}
 }
 
-func updateHeight(node *BinaryTree) int {
+func updateHeight(node *AVLTree) int16 {
 	var (
-		heightLeftSubtree  int
-		heightRightSubtree int
+		heightLeftSubtree  int16
+		heightRightSubtree int16
 	)
 
 	if node.left == nil {
@@ -58,45 +100,7 @@ func updateHeight(node *BinaryTree) int {
 	return 1 + max(heightLeftSubtree, heightRightSubtree)
 }
 
-func getBalanceFactor(node *BinaryTree) int {
-	return getHeight(node.left) - getHeight(node.right)
-}
-
-func Insert(node *BinaryTree, value int) *BinaryTree {
-	if node == nil {
-		return createNode(value)
-	}
-	if value < node.value {
-		node.left = Insert(node.left, value)
-	} else {
-		node.right = Insert(node.right, value)
-	}
-
-	node.height = updateHeight(node)
-	bf := getBalanceFactor(node)
-
-	if bf < -1 && value > node.right.value {
-		return rotateLeft(node)
-	}
-
-	if bf > 1 && value < node.left.value {
-		return rotateRight(node)
-	}
-
-	if bf < -1 && value < node.right.value {
-		node.right = rotateRight(node.right)
-		return rotateLeft(node)
-	}
-
-	if bf > 1 && value > node.left.value {
-		node.left = rotateLeft(node.right)
-		return rotateRight(node)
-	}
-
-	return node
-}
-
-func rotateLeft(node *BinaryTree) *BinaryTree {
+func rotateLeft(node *AVLTree) *AVLTree {
 	root := node.right
 	rootLeftSubtree := root.left
 	root.left = node
@@ -104,10 +108,11 @@ func rotateLeft(node *BinaryTree) *BinaryTree {
 
 	node.height = 1 + max(getHeight(node.left), getHeight(node.right))
 	root.height = 1 + max(getHeight(root.left), getHeight(root.right))
+
 	return root
 }
 
-func rotateRight(node *BinaryTree) *BinaryTree {
+func rotateRight(node *AVLTree) *AVLTree {
 	root := node.left
 	rootRightSubtree := root.right
 	root.right = node
@@ -115,5 +120,17 @@ func rotateRight(node *BinaryTree) *BinaryTree {
 
 	node.height = 1 + max(getHeight(node.left), getHeight(node.right))
 	root.height = 1 + max(getHeight(root.left), getHeight(root.right))
+
 	return root
+}
+
+func Visualize(node *AVLTree) {
+	if node == nil {
+		return
+	}
+	Visualize(node.left)
+	fmt.Println("Node", node)
+	fmt.Println("Left", node.left)
+	fmt.Println("Right", node.right)
+	Visualize(node.right)
 }
